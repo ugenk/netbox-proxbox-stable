@@ -312,6 +312,9 @@ Although the above standard configuration should do the trick to things work.
 ---
 
 ## 6. Contributing
+
+This project is based on commits and pull requests from https://github.com/netdevopsbr/netbox-proxbox
+
 Developing tools for this project based on [ntc-netbox-plugin-onboarding](https://github.com/networktocode/ntc-netbox-plugin-onboarding) repo.
 
 Issues and pull requests are welcomed.
