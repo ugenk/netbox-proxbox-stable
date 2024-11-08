@@ -1,6 +1,6 @@
 ## Netbox Plugin which integrates [Proxmox](https://www.proxmox.com/) and [Netbox](https://netbox.readthedocs.io/)!
 
-This is a fork from original repository `netdevopsbr/netbox-proxbox` intended to maintain stable version of proxbox plugin, without FastAPI and async stuff.
+This is a fork from original repository [netdevopsbr/netbox-proxbox](https://github.com/netdevopsbr/netbox-proxbox) intended to maintain stable version of proxbox plugin, without FastAPI and async stuff.
 
 Proxbox is currently able to get the following information from Proxmox:
 
@@ -78,36 +78,23 @@ The plugin is available as a Python package in pypi and can be installed with pi
 
 ### 1.1. Install package
 
-#### 1.1.1. Using pip (production use)
-
-Enter Netbox's virtual environment.
-```
-source /opt/netbox/venv/bin/activate
-```
-
-Install the plugin package.
-```
-(venv) $ pip install netbox-proxbox
-```
-
-#### 1.1.2. Using git (development use)
-**OBS:** This method is recommend for testing and development purposes and is not for production use.
+#### 1.1.1. Using git
 
 Move to netbox main folder
-```
+```bash
 cd /opt/netbox/netbox
 ```
 
-Clone netbox-proxbox repository
-```
+Clone netbox-proxbox-stable repository
+```bash
 git clone https://github.com/ugenk/netbox-proxbox-stable.git
 ```
 
 Install netbox-proxbox
-```
+```bash
 cd netbox-proxbox-stable
 source /opt/netbox/venv/bin/activate
-python3 setup.py develop
+pip3 install -r requirements.txt && pip3 install .
 ```
 
 ---
@@ -135,7 +122,7 @@ PLUGINS_CONFIG = {
     'netbox_proxbox': {
         'proxmox': [
             {
-                'domain': 'proxbox.example.com',    # May also be IP address
+                'domain': 'proxmox1.example.com',    # May also be IP address
                 'http_port': 8006,
                 'user': 'root@pam',   # always required
                 'password': 'Strong@P4ssword', # only required, if you don't want to use token based authentication
@@ -143,11 +130,11 @@ PLUGINS_CONFIG = {
                     'name': 'tokenID',	# Only type the token name and not the 'user@pam:tokenID' format
                     'value': '039az154-23b2-4be0-8d20-b66abc8c4686'
                 },
-                'ssl': False
+                'ssl': False  # validate ssl cert
             },
             # The following json is optional and applies only for multi-cluster use
             {
-                'domain': 'proxbox2.example.com',    # May also be IP address
+                'domain': 'proxmox2.example.com',    # May also be IP address
                 'http_port': 8006,
                 'user': 'root@pam',   # always required
                 'password': 'Strong@P4ssword', # only required, if you don't want to use token based authentication
@@ -155,7 +142,7 @@ PLUGINS_CONFIG = {
                     'name': 'tokenID',	# Only type the token name and not the 'user@pam:tokenID' format
                     'value': '039az154-23b2-4be0-8d20-b66abc8c4686'
                 },
-                'ssl': False
+                'ssl': False  # validate ssl cert
             }
         ],
         'netbox': {
@@ -174,10 +161,10 @@ PLUGINS_CONFIG = {
 
 ### 1.4. Run Database Migrations
 
-```
-(venv) $ cd /opt/netbox/netbox/
-(venv) $ python3 manage.py migrate
-(venv) $ python3 manage.py collectstatic --no-input
+```bash
+cd /opt/netbox/netbox/
+python3 manage.py migrate
+python3 manage.py collectstatic --no-input
 ```
 
 ---
@@ -185,8 +172,8 @@ PLUGINS_CONFIG = {
 ### 1.5. Restart WSGI Service
 
 Restart the WSGI service to load the new plugin:
-```
-# sudo systemctl restart netbox
+```bash
+systemctl restart netbox
 ```
 
 ---
@@ -282,7 +269,7 @@ On **Proxmox VM/CT** page, click button ![full update button](etc/img/proxbox_fu
 
 It will redirect you to a new page and you just have to wait until the plugin runs through all Proxmox Cluster and create the VMs and CTs in Netbox.
 
-**OBS:** Due the time it takes to full update the information, your web browser might show a timeout page (like HTTP Code 504) even though it actually worked.
+**OBS:** Due the time it takes to full update the information, your web browser might show a timeout page (like HTTP Code 504) even though it actually worked. You can try to configure proxy_read_timeout on your netbox nginx, and timeout in gunicorn.
 
 ---
 
@@ -306,14 +293,14 @@ LOGGING = {
 }
 ```
 
-You can customize this using the following link: [Django Docs - Logging](https://docs.djangoproject.com/en/4.1/topics/logging/).
+You can customize this using the following link: [Django Docs - Logging](https://docs.djangoproject.com/en/dev/topics/logging/).
 Although the above standard configuration should do the trick to things work.
 
 ---
 
 ## 6. Contributing
 
-This project is based on commits and pull requests from https://github.com/netdevopsbr/netbox-proxbox
+This project is based on commits and pull requests from [netdevopsbr/netbox-proxbox](https://github.com/netdevopsbr/netbox-proxbox)
 
 Developing tools for this project based on [ntc-netbox-plugin-onboarding](https://github.com/networktocode/ntc-netbox-plugin-onboarding) repo.
 

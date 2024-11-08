@@ -1,26 +1,6 @@
-> Although **Proxbox is under constant development**, I do it with **best effort** and **spare time**. I have no financial gain with this and hope you guys understand, as I know it is pretty useful to some people. If you want to **speed up its development**, solve the problem or create new features with your own code and create a **[Pull Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)** so that I can **review** it. **I also would like to appreciate the people who already contributed with code or/and bug reports.** Without this help, surely Proxbox would be much less useful as it is already today to several environments!
-
-<div align="center">
-	<a href="https://proxbox.netbox.dev.br/">
-		<img width="532" src="https://github.com/N-Multifibra/proxbox/blob/main/etc/img/proxbox-full-logo.png" alt="Proxbox logo">
-	</a>
-	<br>
-	
-<div>
-	
-### [New Documentation available!](https://proxbox.netbox.dev.br/)
-</div>
-<br>
-</div>
-
-
-
-
 ## Netbox Plugin which integrates [Proxmox](https://www.proxmox.com/) and [Netbox](https://netbox.readthedocs.io/)!
 
-> **NOTE:** Although the Proxbox plugin is in development, it only use **GET requests** and there is **no risk to harm your Proxmox environment** by changing things incorrectly.
-
-<br>
+This is a fork from original repository [netdevopsbr/netbox-proxbox](https://github.com/netdevopsbr/netbox-proxbox) intended to maintain stable version of proxbox plugin, without FastAPI and async stuff.
 
 Proxbox is currently able to get the following information from Proxmox:
 
@@ -43,14 +23,14 @@ Proxbox is currently able to get the following information from Proxmox:
 	
 ### Versions
 
-
 The following table shows the Netbox and Proxmox versions compatible (tested) with Proxbox plugin.
 
-| netbox version | proxmox version | proxbox version |
-| ------------- |-------------|-------------|
-| >= v3.4.0 | >= v6.2.0  | =v0.0.5 |
-| >= v3.2.0 | >= v6.2.0 | =v0.0.4 |
-| >= v3.0.0 < v3.2 | >= v6.2.0 | =v0.0.3 |
+| netbox version   | proxmox version | proxbox version |
+|------------------|-----------------|-------------|
+| >= v4.1.6        | up to 8.2       | =v0.0.6 |   
+| >= v3.4.0        | >= v6.2.0       | =v0.0.5 |
+| >= v3.2.0        | >= v6.2.0       | =v0.0.4 |
+| >= v3.0.0 < v3.2 | >= v6.2.0       | =v0.0.3 |
 
 
 </div>
@@ -98,36 +78,23 @@ The plugin is available as a Python package in pypi and can be installed with pi
 
 ### 1.1. Install package
 
-#### 1.1.1. Using pip (production use)
-
-Enter Netbox's virtual environment.
-```
-source /opt/netbox/venv/bin/activate
-```
-
-Install the plugin package.
-```
-(venv) $ pip install netbox-proxbox
-```
-
-#### 1.1.2. Using git (development use)
-**OBS:** This method is recommend for testing and development purposes and is not for production use.
+#### 1.1.1. Using git
 
 Move to netbox main folder
-```
+```bash
 cd /opt/netbox/netbox
 ```
 
-Clone netbox-proxbox repository
-```
-git clone https://github.com/netdevopsbr/netbox-proxbox.git
+Clone netbox-proxbox-stable repository
+```bash
+git clone https://github.com/ugenk/netbox-proxbox-stable.git
 ```
 
 Install netbox-proxbox
-```
-cd netbox-proxbox
+```bash
+cd netbox-proxbox-stable
 source /opt/netbox/venv/bin/activate
-python3 setup.py develop
+pip3 install -r requirements.txt && pip3 install .
 ```
 
 ---
@@ -153,17 +120,31 @@ Replace the values with your own following the [Configuration Parameters](#2-con
 ```python
 PLUGINS_CONFIG = {
     'netbox_proxbox': {
-        'proxmox': {
-            'domain': 'proxbox.example.com',    # May also be IP address
-            'http_port': 8006,
-            'user': 'root@pam',   # always required
-            'password': 'Strong@P4ssword', # only required, if you don't want to use token based authentication
-            'token': {
-                'name': 'tokenID',	# Only type the token name and not the 'user@pam:tokenID' format
-                'value': '039az154-23b2-4be0-8d20-b66abc8c4686'
+        'proxmox': [
+            {
+                'domain': 'proxmox1.example.com',    # May also be IP address
+                'http_port': 8006,
+                'user': 'root@pam',   # always required
+                'password': 'Strong@P4ssword', # only required, if you don't want to use token based authentication
+                'token': {
+                    'name': 'tokenID',	# Only type the token name and not the 'user@pam:tokenID' format
+                    'value': '039az154-23b2-4be0-8d20-b66abc8c4686'
+                },
+                'ssl': False  # validate ssl cert
             },
-            'ssl': False
-        },
+            # The following json is optional and applies only for multi-cluster use
+            {
+                'domain': 'proxmox2.example.com',    # May also be IP address
+                'http_port': 8006,
+                'user': 'root@pam',   # always required
+                'password': 'Strong@P4ssword', # only required, if you don't want to use token based authentication
+                'token': {
+                    'name': 'tokenID',	# Only type the token name and not the 'user@pam:tokenID' format
+                    'value': '039az154-23b2-4be0-8d20-b66abc8c4686'
+                },
+                'ssl': False  # validate ssl cert
+            }
+        ],
         'netbox': {
             'domain': 'localhost',     # Ensure localhost is added to ALLOWED_HOSTS
             'http_port': 8001,     # Gunicorn port.
@@ -174,25 +155,16 @@ PLUGINS_CONFIG = {
                 'node_role_id' : 0,
                 'site_id': 0
             }
-        }
-    }
+      }
+ }
 ```
-
-<br>
-
-#### 1.3.2. Change Netbox '**[settings.py](https://github.com/netbox-community/netbox/blob/develop/netbox/netbox/settings.py)**' to include Proxbox Template directory
-
-> Probably on the next release of Netbox, it will not be necessary to make the configuration below! As the [Pull Request #8733](https://github.com/netbox-community/netbox/pull/8734) got merged to develop branch
-
-**It is no longer necessary to modify the templates section in `settings.py` and you may revert any changes.**
-
----
 
 ### 1.4. Run Database Migrations
 
-```
-(venv) $ cd /opt/netbox/netbox/
-(venv) $ python3 manage.py migrate
+```bash
+cd /opt/netbox/netbox/
+python3 manage.py migrate
+python3 manage.py collectstatic --no-input
 ```
 
 ---
@@ -200,8 +172,8 @@ PLUGINS_CONFIG = {
 ### 1.5. Restart WSGI Service
 
 Restart the WSGI service to load the new plugin:
-```
-# sudo systemctl restart netbox
+```bash
+systemctl restart netbox
 ```
 
 ---
@@ -210,7 +182,7 @@ Restart the WSGI service to load the new plugin:
 
 The following options are available:
 
-* `proxmox`: (Dict) Proxmox related configuration to use proxmoxer.
+* `proxmox`: (List) Proxmox related configuration to use proxmoxer.
 * `proxmox.domain`: (String) Domain or IP address of Proxmox.
 * `proxmox.http_port`: (Integer) Proxmox HTTP port (default: 8006).
 * `proxmox.user`: (String) Proxmox Username.
@@ -239,8 +211,6 @@ The following options are available:
 To get Proxmox ID, Node and Type information, is necessary to configure Custom Fields.
 Below the parameters needed to make it work:
 
-<br>
-
 ### 3.1. Custom Field Configuration
 
 #### 3.1.1. Proxmox ID
@@ -255,8 +225,6 @@ Optional values (may be different)
 - [Custom Field] **Label:** [Proxmox] ID
 - [Custom Field] **Description:** Proxmox VM/CT ID
 
-<br>
-
 #### 3.1.2. Proxmox Node
 
 Required values (must be equal)
@@ -267,8 +235,6 @@ Required values (must be equal)
 Optional values (may be different)
 - [Custom Field] **Label:** [Proxmox] Node
 - [Custom Field] **Description:** Proxmox Node (Server)
-
-<br>
 
 #### 3.1.3. Proxmox Type (qemu or lxc)
 
@@ -282,16 +248,12 @@ Optional values (may be different)
 - [Custom Field] **Label:** [Proxmox] Type
 - [Custom Field] **Description:** Proxmox type (VM or CT)
 
-<br>
-
 #### 3.1.4. Proxmox Keep Interface
 
 Required values (must be equal)
 - [Custom Field] **Type:** Boolean (true/false)
 - [Custom Field] **Name:** proxmox_keep_interface
 - [Assignment] **Content-type:** DCIM > Interface
-
-<br>
 
 ### 3.2. Custom Field Example
 
@@ -307,7 +269,7 @@ On **Proxmox VM/CT** page, click button ![full update button](etc/img/proxbox_fu
 
 It will redirect you to a new page and you just have to wait until the plugin runs through all Proxmox Cluster and create the VMs and CTs in Netbox.
 
-**OBS:** Due the time it takes to full update the information, your web brouse might show a timeout page (like HTTP Code 504) even though it actually worked.
+**OBS:** Due the time it takes to full update the information, your web browser might show a timeout page (like HTTP Code 504) even though it actually worked. You can try to configure proxy_read_timeout on your netbox nginx, and timeout in gunicorn.
 
 ---
 
@@ -331,31 +293,15 @@ LOGGING = {
 }
 ```
 
-You can customize this using the following link: [Django Docs - Logging](https://docs.djangoproject.com/en/4.1/topics/logging/).
+You can customize this using the following link: [Django Docs - Logging](https://docs.djangoproject.com/en/dev/topics/logging/).
 Although the above standard configuration should do the trick to things work.
 
 ---
 
 ## 6. Contributing
+
+This project is based on commits and pull requests from [netdevopsbr/netbox-proxbox](https://github.com/netdevopsbr/netbox-proxbox)
+
 Developing tools for this project based on [ntc-netbox-plugin-onboarding](https://github.com/networktocode/ntc-netbox-plugin-onboarding) repo.
 
 Issues and pull requests are welcomed.
-
----
-
-## 7. Roadmap
-- Start using custom models to optimize the use of the Plugin and stop using 'Custom Fields'
-- Automatically remove Nodes on Netbox when removed on Promox (as it already happens with Virtual Machines and Containers)
-- Add individual update of VM/CT's and Nodes (currently is only possible to update all at once)
-- Add periodic update of the whole environment so that the user does not need to manually click the update button.
-- Create virtual machines and containers directly on Netbox, having no need to access Proxmox.
-- Add 'Console' button to enable console access to virtual machines
-
----
-
-## 8. Get Help from Community!
-If you are struggling to get Proxbox working, feel free to contact someone from community (including me) to help you.
-Below some of the communities available:
-- **[Official - Slack Community (english)](https://netdev.chat/)**
-- **[Community Discord Channel - 🇧🇷 (pt-br)](https://discord.gg/X6FudvXW)**
-- **[Community Telegram Chat - 🇧🇷 (pt-br)](https://t.me/netboxbr)**

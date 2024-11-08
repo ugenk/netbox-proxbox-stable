@@ -1,9 +1,9 @@
-site_name: ProxBox Documentation (NetBox Plugin)
+site_name: ProxBox Stable Documentation (NetBox Plugin)
 site_dir: ./site
 site_url: https://proxbox.netbox.dev.br/
 docs_dir: ./docs
-repo_name: netdevopsbr/netbox-proxbox
-repo_url: https://github.com/netdevopsbr/netbox-proxbox
+repo_name: ugenk/netbox-proxbox-stable
+repo_url: https://github.com/ugenk/netbox-proxbox-stable
 theme:
   name: material
   custom_dir: docs/_theme/
@@ -37,13 +37,7 @@ plugins:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/netdevopsbr/netbox-proxbox
-    - icon: fontawesome/brands/slack
-      link: https://netdev.chat/
-    - icon: fontawesome/brands/telegram
-      link: https://t.me/netboxbr
-    - icon: fontawesome/brands/discord
-      link: https://discord.gg/9N3V4mpMXU
+      link: https://github.com/ugenk/netbox-proxbox-stable
   homepage: https://netboxlabs.com
 extra_css:
   - https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css
