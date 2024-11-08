@@ -3,7 +3,6 @@ from .plugins_config import (
     NETBOX_SESSION as nb,
     PROXMOX_SESSION as proxmox,
     NETBOX_VM_ROLE_ID,
-
 )
 
 from .create import (
@@ -15,6 +14,8 @@ from .create.virtualization import (
 )
 
 import logging
+
+from netbox.settings import BASE_PATH
 
 #
 # UPDATE
@@ -142,7 +143,7 @@ class VirtualMachine:
         # HTTP PATCH Request (partially update)
         #
         # URL 
-        url = '{}/api/virtualization/virtual-machines/{}/'.format(domain_with_http, vm_id)
+        url = '{}{}/api/virtualization/virtual-machines/{}/'.format(domain_with_http, BASE_PATH, vm_id)
         
         # HTTP Request Headers
         headers = {

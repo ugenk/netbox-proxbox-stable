@@ -1,6 +1,7 @@
 import requests
 import json
 import re
+from netbox.settings import BASE_PATH
 
 # PLUGIN_CONFIG variables
 from ..plugins_config import (
@@ -78,7 +79,7 @@ def http_update_custom_fields(**kwargs):
     # HTTP PATCH Request (partially update)
     #
     # URL 
-    url = '{}api/virtualization/virtual-machines/{}/'.format(domain_with_http, vm_id)
+    url = '{}{}api/virtualization/virtual-machines/{}/'.format(domain_with_http, BASE_PATH, vm_id)
     
     # HTTP Request Headers
     headers = {
