@@ -72,7 +72,7 @@ def is_vm_on_proxmox(proxmox_session, netbox_vm):
         
         # If 'local_context' is null, try updating it to be able to get ID from VM
         if local_context == None:
-            local_context_updated = updates.local_context_data(netbox_vm, all_proxmox_vms[name_index], PROXMOX, PROXMOX_PORT)
+            local_context_updated = updates.virtual_machine.local_context_data(netbox_vm, all_proxmox_vms[name_index], PROXMOX, PROXMOX_PORT)
 
             if local_context_updated == True:
                 local_context = netbox_vm.local_context_data
