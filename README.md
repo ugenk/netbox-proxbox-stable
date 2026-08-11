@@ -49,6 +49,7 @@ The following table shows the Netbox and Proxmox versions compatible (tested) wi
   - [1.3.2. Change Netbox 'settings.py' to include Proxbox Template directory](#132-change-netbox-settingspy-to-include-proxbox-template-directory)
 - [1.4. Run Database Migrations](#14-run-database-migrations)
 - [1.5 Restart WSGI Service](#15-restart-wsgi-service)
+- [1.6 Configure webserver](#16-configure-webserver)
 
 [2. Configuration Parameters](#2-configuration-parameters)
 
@@ -175,6 +176,16 @@ python3 manage.py collectstatic --no-input
 Restart the WSGI service to load the new plugin:
 ```bash
 systemctl restart netbox
+```
+
+---
+### 1.6. Configure webserver
+
+Add to your webserver config options to increase proxy read and send timeouts.
+For example, in nginx it is looking like this:
+```
+proxy_read_timeout 10m;
+proxy_send_timeout 10m;
 ```
 
 ---
