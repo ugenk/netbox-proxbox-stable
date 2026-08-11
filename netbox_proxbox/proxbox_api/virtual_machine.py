@@ -384,7 +384,11 @@ class VirtualMachine:
                 _pmx_if.append({'name': ifname, 'mac_address': _mac_addr, 'mtu': _mtu})
 
         for interface in nb.virtualization.interfaces.filter(virtual_machine_id=netbox_vm.id):
-            _ntb_if.append({'name': interface.name, 'mac_address': interface.mac_address.upper(), 'mtu': interface.mtu})
+            _ntb_if.append({
+                'name': interface.name,
+                'mac_address': (interface.mac_address or '').upper(),
+                'mtu': interface.mtu,
+            })
 
         for pmx_if_mac in [_if['mac_address'] for _if in _pmx_if]:
             pmx_if = next((_if for _if in _pmx_if if _if['mac_address'] == pmx_if_mac), None)
@@ -453,7 +457,7 @@ class VirtualMachine:
                                 _pmx_ips.append(_if)
 
                         for interface in nb.virtualization.interfaces.filter(virtual_machine_id=netbox_vm.id):
-                            _mac = interface['mac_address'].lower()
+                            _mac = (interface['mac_address'] or '').lower()
                             _if = {_mac: []}
                             for ip in nb.ipam.ip_addresses.filter(virtual_machine_id=netbox_vm.id):
                                 if ip.assigned_object_id == interface.id:
@@ -481,7 +485,7 @@ class VirtualMachine:
                         _pmx_ips.append({_mac_addr: proxmox_ipaddr})
 
                 for interface in nb.virtualization.interfaces.filter(virtual_machine_id=netbox_vm.id):
-                    _mac = interface['mac_address'].lower()
+                    _mac = (interface['mac_address'] or '').lower()
                     _if = {_mac: []}
                     for ip in nb.ipam.ip_addresses.filter(virtual_machine_id=netbox_vm.id):
                         if ip.assigned_object_id == interface.id:
