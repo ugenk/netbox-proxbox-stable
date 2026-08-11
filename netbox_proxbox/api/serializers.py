@@ -1,16 +1,18 @@
 # base serializer class
 from rest_framework import serializers
 
-# import nested serializers for Netbox objects that we link to in our model ProxmoxVM
-from virtualization.api.nested_serializers import NestedClusterSerializer, NestedVirtualMachineSerializer
+# NetBox 4.2+: nested serializers removed; use primary serializers with nested=True
+from virtualization.api.serializers import ClusterSerializer, VirtualMachineSerializer
 
 # model that will be built the serializer
 from netbox_proxbox.models import ProxmoxVM
 
+
 class ProxmoxVMSerializer(serializers.ModelSerializer):
     """Serializer for the ProxmoxVM model."""
 
-    cluster = NestedClusterSerializer(
+    cluster = ClusterSerializer(
+        nested=True,
         # set relationship type to many-to-one
         many=False,
         # the field is allowed as the input in API calls
@@ -21,7 +23,8 @@ class ProxmoxVMSerializer(serializers.ModelSerializer):
         help_text="ProxmoxVM Cluster"
     )
 
-    virtual_machine = NestedVirtualMachineSerializer(
+    virtual_machine = VirtualMachineSerializer(
+        nested=True,
         many=False,
         read_only=False,
         required=True,
