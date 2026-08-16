@@ -27,7 +27,7 @@ The following table shows the Netbox and Proxmox versions compatible (tested) wi
 
 | netbox version   | proxmox version | proxbox version |
 |------------------|-----------------|-------------|
-| >= v4.2.9        | up to 8.4       | current |
+| >= v4.6.8        | up to 8.4       | current |
 | >= v4.1.6        | up to 8.2       | =v0.0.6 |   
 | >= v3.4.0        | >= v6.2.0       | =v0.0.5 |
 | >= v3.2.0        | >= v6.2.0       | =v0.0.4 |
