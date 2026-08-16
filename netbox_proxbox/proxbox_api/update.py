@@ -364,11 +364,11 @@ def nodes(**kwargs):
     proxmox_json = kwargs.get('proxmox_json')
     proxmox = kwargs.get('proxmox')
 
-    proxmox_node_name = proxmox_json.get("name")
+    proxmox_node_name = create.dcim.netbox_node_name(proxmox_json.get("name"), proxmox_cluster)
 
     def create_node():
         # If node does not exist, create it.
-        netbox_node = create.dcim.node(proxmox, proxmox_json)
+        netbox_node = create.dcim.node(proxmox, proxmox_json, proxmox_cluster)
 
         # Node created
         if netbox_node != None:

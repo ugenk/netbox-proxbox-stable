@@ -3,6 +3,7 @@ from ..plugins_config import (
     NETBOX_SESSION as nb,
     NETBOX_NODE_ROLE_ID,
     NETBOX_SITE_ID,
+    NETBOX_NODE_NAME_WITH_CLUSTER,
 )
 
 from . import (
@@ -130,10 +131,34 @@ def site(**kwargs):
 #
 # dcim.devices (nodes)
 #
-def node(proxmox, proxmox_node):
+def netbox_node_name(hostname, cluster=None):
+    """NetBox device name for a Proxmox physical node.
+
+    With netbox.settings.node_name_with_cluster the name is hostname.cluster_name.
+    cluster may be a Proxmox status dict or a NetBox cluster object.
+    """
+    if not hostname:
+        return hostname
+    if not NETBOX_NODE_NAME_WITH_CLUSTER:
+        return hostname
+    if cluster is None:
+        return hostname
+    if isinstance(cluster, dict):
+        cluster_name = cluster.get("name")
+    else:
+        cluster_name = getattr(cluster, "name", None)
+    if not cluster_name:
+        return hostname
+    suffix = f".{cluster_name}"
+    if hostname.endswith(suffix):
+        return hostname
+    return f"{hostname}{suffix}"
+
+
+def node(proxmox, proxmox_node, proxmox_cluster=None):
     # Create json with basic NODE information
     node_json = {}
-    node_json["name"] = proxmox_node['name']
+    node_json["name"] = netbox_node_name(proxmox_node['name'], proxmox_cluster)
     node_json["device_role"] = extras.role(role_id = NETBOX_NODE_ROLE_ID).id
     node_json["device_type"] = device_type().id
     node_json["site"] = site(site_id = NETBOX_SITE_ID).id
@@ -149,7 +174,7 @@ def node(proxmox, proxmox_node):
     check_duplicate = proxmox_node.get("duplicate", False)
     if check_duplicate:
         # Redefine name appending (2) to final
-        node_json["name"] = f"{proxmox_node['name']} (2)"
+        node_json["name"] = f"{node_json['name']} (2)"
 
 
         original_device = proxmox_node.get("netbox_original_device", None)

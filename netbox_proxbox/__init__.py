@@ -32,7 +32,8 @@ class ProxboxConfig(PluginConfig):
             'settings': {
                 'virtualmachine_role_id' : 0,
                 'node_role_id' : 0,
-                'site_id': 0
+                'site_id': 0,
+                'node_name_with_cluster': False
             }
         },
     }

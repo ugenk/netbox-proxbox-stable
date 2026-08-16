@@ -62,6 +62,7 @@ DEFAULT_NETBOX_SETTINGS = DEFAULT_NETBOX_SETTING.get("settings")
 DEFAULT_NETBOX_VM_ROLE_ID = DEFAULT_NETBOX_SETTINGS.get("virtualmachine_role_id", 0)
 DEFAULT_NETBOX_NODE_ROLE_ID = DEFAULT_NETBOX_SETTINGS.get("node_role_id", 0)
 DEFAULT_NETBOX_SITE_ID = DEFAULT_NETBOX_SETTINGS.get("site_id", 0)
+DEFAULT_NETBOX_NODE_NAME_WITH_CLUSTER = DEFAULT_NETBOX_SETTINGS.get("node_name_with_cluster", False)
 
 ####################################################################################################
 #                                                                                                  #
@@ -89,10 +90,13 @@ NETBOX_TOKEN = NETBOX_SETTING.get("token", DEFAULT_NETBOX_TOKEN)
 # SETTINGS
 NETBOX_SETTINGS = NETBOX_SETTING.get("settings", DEFAULT_NETBOX_SETTINGS)
 
+NETBOX_NODE_NAME_WITH_CLUSTER = DEFAULT_NETBOX_NODE_NAME_WITH_CLUSTER
+
 if NETBOX_SETTINGS != None:
     NETBOX_VM_ROLE_ID = NETBOX_SETTINGS.get("virtualmachine_role_id", DEFAULT_NETBOX_VM_ROLE_ID)
     NETBOX_NODE_ROLE_ID = NETBOX_SETTINGS.get("node_role_id", DEFAULT_NETBOX_NODE_ROLE_ID)
     NETBOX_SITE_ID = NETBOX_SETTINGS.get("site_id", DEFAULT_NETBOX_SITE_ID)
+    NETBOX_NODE_NAME_WITH_CLUSTER = NETBOX_SETTINGS.get("node_name_with_cluster", DEFAULT_NETBOX_NODE_NAME_WITH_CLUSTER)
 
 PROXMOX_SESSIONS = {}
 

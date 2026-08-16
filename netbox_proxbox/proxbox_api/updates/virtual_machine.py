@@ -304,7 +304,7 @@ def interfaces(proxmox, netbox_vm, proxmox_vm):
                 elif _k_s[0] == 'mtu':
                     if int(_k_s[1]) == 1:
                         if _bridge is not None:
-                            node = nb.dcim.devices.get(name=proxmox_vm['node'])
+                            node = nb.dcim.devices.get(name=create.dcim.netbox_node_name(proxmox_vm['node'], netbox_vm.cluster))
                             brg = nb.dcim.interfaces.get(device_id=node.id, name=_bridge)
                             _mtu = brg.mtu
                     else:

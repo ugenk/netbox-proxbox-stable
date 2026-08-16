@@ -155,7 +155,8 @@ PLUGINS_CONFIG = {
             'settings': {
                 'virtualmachine_role_id' : 0,
                 'node_role_id' : 0,
-                'site_id': 0
+                'site_id': 0,
+                'node_name_with_cluster': False
             }
       }
  }
@@ -215,6 +216,7 @@ The following options are available:
 * `netbox.settings.virtualmachine_role_id`: (Integer) Role ID to be used by Proxbox when creating Virtual Machines
 * `netbox.settings.node_role_id`: (Integer) Role ID to be used by Proxbox when creating Nodes (Devices)
 * `netbox.settings.site_id` (Integer) Site ID to be used by Proxbox when creating Nodes (Devices)
+* `netbox.settings.node_name_with_cluster`: (Bool) If True, physical node name in NetBox is `hostname.clustername`, where `clustername` is the Proxmox cluster name. Default: False (hostname only).
 
 ---
 
