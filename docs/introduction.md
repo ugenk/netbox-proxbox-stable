@@ -27,7 +27,7 @@ The following table shows the Netbox and Proxmox versions compatible (tested) wi
 
 | netbox version   | proxmox version | proxbox version |
 |------------------|-----------------|-------------|
-| >= v4.1.6        | up to 8.2       | =v0.0.6 |   
+| >= v4.6.8        | up to 8.4       | =v0.0.6 |
 | >= v3.4.0        | >= v6.2.0       | =v0.0.5 |
 | >= v3.2.0        | >= v6.2.0       | =v0.0.4 |
 | >= v3.0.0 < v3.2 | >= v6.2.0       | =v0.0.3 |
@@ -166,6 +166,13 @@ PLUGINS_CONFIG = {
 cd /opt/netbox/netbox/
 python3 manage.py migrate
 python3 manage.py collectstatic --no-input
+```
+
+If `showmigrations netbox_proxbox` shows all migrations as applied (`[X]`), but PostgreSQL has no table `netbox_proxbox_proxmoxvm`, Django recorded the migrations without creating the table. Recreate the schema:
+
+```bash
+python3 manage.py migrate netbox_proxbox zero --fake
+python3 manage.py migrate netbox_proxbox
 ```
 
 ---

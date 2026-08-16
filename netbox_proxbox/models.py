@@ -4,9 +4,8 @@ from django.db import models
 
 from django.urls import reverse
 
-# Model class 'ChangeLoggedModel' defined by Netbox
-#from extras.models import ChangeLoggedModel
-from extras.models.models import ChangeLoggedModel
+# NetBox 4.x: ChangeLoggedModel lives in netbox.models
+from netbox.models import ChangeLoggedModel
 
 # Class defined by Netbox to handle IPv4/IPv6 address
 #from ipam.fields import IPAddressField
@@ -25,6 +24,7 @@ class ProxmoxVM(ChangeLoggedModel):
         on_delete=models.SET_NULL,    # If Netbox linked object is deleted, set the field to NULL
         blank=True, # Makes field optional
         null=True,   # Allows corresponding database column to be NULL (contain no value)
+        related_name='+',
         verbose_name="Cluster"
     )
     node = models.CharField(
@@ -35,6 +35,7 @@ class ProxmoxVM(ChangeLoggedModel):
     virtual_machine = models.ForeignKey(
         to="virtualization.VirtualMachine",
         on_delete=models.PROTECT,     # linked virtual_machine cannot be deleted as long as this object exists
+        related_name='+',
         verbose_name="Proxmox VM/CT"
     )
     status = models.CharField(
