@@ -315,52 +315,57 @@ def interfaces(proxmox, netbox_vm, proxmox_vm):
 
     for interface in nb.virtualization.interfaces.filter(virtual_machine_id=netbox_vm.id):
         _ntb_if.append({
+            'record': interface,
             'name': interface.name,
             'mac_address': (interface.mac_address or '').upper(),
             'mtu': interface.mtu,
         })
 
-    for pmx_if_mac in [_if['mac_address'] for _if in _pmx_if]:
-        pmx_if = next((_if for _if in _pmx_if if _if['mac_address'] == pmx_if_mac), None)
-        if pmx_if is not None:
-            if pmx_if_mac not in [_if['mac_address'] for _if in _ntb_if]:
-                try:
-                    if nb.virtualization.interfaces.get(virtual_machine_id=netbox_vm.id, virtual_machine=netbox_vm.name, name=pmx_if['name']):
-                        logging.warning("[WARNING] Interface already exist.")
-                    else:
-                        # Create interface if does not exist.
-                        netbox_interface = nb.virtualization.interfaces.create(virtual_machine_id=netbox_vm.id, virtual_machine=netbox_vm.id, name=pmx_if['name'], mac_address=pmx_if_mac, mtu=pmx_if['mtu'])
-                        updated = True
-                except Exception as error: print(error)
-            else:
-                if pmx_if not in _ntb_if:
-                    netbox_interface = list(nb.virtualization.interfaces.filter(virtual_machine_id=netbox_vm.id, virtual_machine=netbox_vm.id, mac_address=pmx_if_mac))
-                    if len(netbox_interface) == 1:
-                        netbox_interface = netbox_interface[0]
-                        netbox_interface = nb.virtualization.interfaces.update([{'id': netbox_interface.id, 'name': pmx_if['name'], 'mac_address': pmx_if_mac, 'mtu': pmx_if['mtu']}])
-                        updated = True
-                    elif len(netbox_interface) > 1:
-                        logging.error('[ERROR] Too many results')
-                        return False
-        else:
-            logging.error('[ERROR] Something went wrong while getting interface config from proxmox')
-            return False
+    matched_ids = set()
+    for pmx_if in _pmx_if:
+        free_ntb_if = [_if for _if in _ntb_if if _if['record'].id not in matched_ids]
+        ntb_if = (
+            next((_if for _if in free_ntb_if if pmx_if['mac_address'] and _if['mac_address'] == pmx_if['mac_address']), None)
+            or next((_if for _if in free_ntb_if if _if['name'] == pmx_if['name']), None)
+        )
+        try:
+            if ntb_if is None:
+                netbox_interface = nb.virtualization.interfaces.create(virtual_machine=netbox_vm.id, name=pmx_if['name'], mtu=pmx_if['mtu'])
+                set_vm_interface_mac(netbox_interface, pmx_if['mac_address'])
+                updated = True
+                continue
 
-    for ntb_if_mac in [_if['mac_address'] for _if in _ntb_if]:
-        if ntb_if_mac not in [_if['mac_address'] for _if in _pmx_if]:
-            netbox_interface = list(nb.virtualization.interfaces.filter(virtual_machine_id=netbox_vm.id, mac_address=ntb_if_mac))
-            if len(netbox_interface):
-                if len(netbox_interface) == 1:
-                    netbox_interface = netbox_interface[0]
-                    netbox_interface.delete()
-                    updated = True
-                elif len(netbox_interface) > 1:
-                    logging.error('[ERROR] Too many results')
-                    return False
-            else:
-                logging.error('[ERROR] Something went wrong while getting interface config from netbox')
-                return False
+            matched_ids.add(ntb_if['record'].id)
+            if ntb_if['name'] != pmx_if['name'] or ntb_if['mtu'] != pmx_if['mtu']:
+                nb.virtualization.interfaces.update([{'id': ntb_if['record'].id, 'name': pmx_if['name'], 'mtu': pmx_if['mtu']}])
+                updated = True
+            if ntb_if['mac_address'] != pmx_if['mac_address']:
+                set_vm_interface_mac(ntb_if['record'], pmx_if['mac_address'])
+                updated = True
+        except Exception as error:
+            logging.error(f"[ERROR] Failed to sync interface {pmx_if['name']} of {netbox_vm.name}\n   > {error}")
+
+    for ntb_if in _ntb_if:
+        if ntb_if['record'].id not in matched_ids:
+            ntb_if['record'].delete()
+            updated = True
     return updated
+
+
+# NetBox 4.2+: VMInterface.mac_address is read-only, the MAC is a dcim.MACAddress
+# object referenced by VMInterface.primary_mac_address.
+def set_vm_interface_mac(netbox_interface, mac_address):
+    if not mac_address:
+        return
+    if netbox_interface.primary_mac_address:
+        nb.dcim.mac_addresses.update([{'id': netbox_interface.primary_mac_address.id, 'mac_address': mac_address}])
+        return
+    mac = nb.dcim.mac_addresses.create(
+        mac_address=mac_address,
+        assigned_object_type='virtualization.vminterface',
+        assigned_object_id=netbox_interface.id,
+    )
+    nb.virtualization.interfaces.update([{'id': netbox_interface.id, 'primary_mac_address': mac.id}])
 
 def interfaces_ips(proxmox, netbox_vm, proxmox_vm):
     updated = False
