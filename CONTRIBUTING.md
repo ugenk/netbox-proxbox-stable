@@ -1,32 +1,3 @@
-## Getting Help
-
-If you encounter any issues installing or using Proxbox, try one of the
-following resources to get assistance. Please **do not** open a GitHub issue
-except to report bugs or request features.
-
-### GitHub Discussions
-
-GitHub's discussions are the best place to get help or propose rough ideas for
-new functionality. Their integration with GitHub allows for easily cross-
-referencing and converting posts to issues as needed. There are several
-categories for discussions:
-
-* **General** - General community discussion
-* **Ideas** - Ideas for new functionality that isn't yet ready for a formal
-  feature request
-* **Q&A** - Request help with installing or using NetBox
-
-### Slack
-
-For real-time chat, you can join the **#netbox** Slack channel on [NetDev Community](https://slack.netbox.dev/).
-Unfortunately, the Slack channel does not provide long-term retention of chat
-history, so try to avoid it for any discussions would benefit from being
-preserved for future reference.
-
-### Telegram
-
-If you prefer, you can also join the **[telegram group](https://t.me/joinchat/jxhqhQCxEmNhZDJh)** to freely discuss about the project and get assistance from community.
-
 ## Reporting Bugs
 
 * First, ensure that you're running the [latest stable version](https://github.com/N-Multifibra/netbox-proxbox)

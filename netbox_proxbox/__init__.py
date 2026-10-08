@@ -5,7 +5,7 @@ class ProxboxConfig(PluginConfig):
     name = "netbox_proxbox"
     verbose_name = "Proxbox Stable"
     description = "Integrates Proxmox and Netbox"
-    version = "0.0.6"
+    version = "0.0.7"
     author = "Evgeniy Kozhuhovskiy"
     author_email = "e.kozhuhovskiy@gmail.com"
     base_url = "proxbox"

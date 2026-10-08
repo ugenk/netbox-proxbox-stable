@@ -12,7 +12,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 '''
 
-github = 'https://github.com/N-Multifibra/netbox-proxbox'
+github = 'https://github.com/ugenk/netbox-proxbox-stable'
 
 # Proxbox dependencies
 requires = [
@@ -42,11 +42,11 @@ dev_requires = [
 
 setup(
     name="netbox-proxbox",
-    version="0.0.6",
-    author="Emerson Felipe",
-    author_email="emerson.felipe@nmultifibra.com.br",
-    description="Integration between Proxmox and Netbox",
-    url='https://github.com/N-Multifibra/netbox-proxbox',
+    version="0.0.7",
+    author="Evgeniy Kozhuhovskiy",
+    author_email="e.kozhuhovskiy@gmail.com",
+    description="Integration between Proxmox and Netbox - stable version",
+    url='https://github.com/ugenk/netbox-proxbox-stable',
     long_description=long_description,
     long_description_content_type="text/markdown",
     classifiers=[
